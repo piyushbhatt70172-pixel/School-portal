@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>School Portal</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17233c}header{background:#14233f;color:white;padding:20px 24px;display:flex;justify-content:space-between;align-items:center}header h1{margin:0;font-size:30px}header h1 span{color:#4095ff}.menu{font-size:25px}.tabs{display:flex;gap:10px;padding:20px 5%;background:#f3f6fb}.tab{flex:1;border:0;border-radius:18px;padding:16px 8px;font-size:17px;font-weight:bold;background:white;cursor:pointer}.tab.active{background:#2860ad;color:white}.page{display:none;max-width:1100px;margin:auto;padding:0 5% 40px}.page.active{display:block}.hero{background:linear-gradient(135deg,#1d355d,#2d64ad);color:white;border-radius:30px;padding:45px 30px;margin-bottom:25px}.hero h2{font-size:38px;margin:0 0 15px}.panel{background:white;border-radius:22px;padding:24px;margin:18px 0;box-shadow:0 5px 20px #0000000b}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}.card{background:white;border-radius:20px;padding:22px;box-shadow:0 5px 20px #0000000b}.card h3{margin-top:0}.big{font-size:34px;font-weight:bold}.input,select,textarea{width:100%;padding:13px;margin:7px 0 12px;border:1px solid #d4dbea;border-radius:12px;font-size:16px}textarea{min-height:90px}.btn{border:0;border-radius:12px;padding:12px 17px;font-weight:bold;cursor:pointer;margin:4px}.primary{background:#2860ad;color:white}.success{background:#198754;color:white}.danger{background:#dc3545;color:white}.secondary{background:#e9eef6;color:#17233c}.hidden{display:none!important}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.tablewrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px;border-bottom:1px solid #e4e8ef;white-space:nowrap}.notice,.assignment,.application{border:1px solid #e1e6ef;border-radius:16px;padding:15px;margin:10px 0}.status{display:inline-block;padding:5px 10px;border-radius:999px;font-weight:bold;font-size:13px}.pending{background:#fff2c2}.approved{background:#d8f5df;color:#146c2e}.rejected{background:#ffe0e3;color:#9b1c2b}.muted{color:#667085}.msg{min-height:22px;font-weight:bold}.error{color:#c62828}.successText{color:#18733a}@media(max-width:600px){header h1{font-size:25px}.hero h2{font-size:31px}.tabs{padding:14px 3px}.tab{font-size:14px;padding:14px 4px}.page{padding:0 4% 30px}}
+
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,#14233f,#2860ad);display:flex;align-items:center;justify-content:center;padding:22px;z-index:9999}.loginBox{width:100%;max-width:430px;background:white;border-radius:28px;padding:30px;box-shadow:0 20px 60px #0005}.loginLogo{text-align:center;font-size:34px;font-weight:800;color:#17233c;margin-bottom:8px}.loginLogo span{color:#4095ff}.loginBox h2{margin:10px 0 6px;text-align:center}.loginBox p{text-align:center;color:#667085}.googleBtn{width:100%;background:white;border:1px solid #d4dbea;border-radius:12px;padding:13px;font-size:16px;font-weight:bold;cursor:pointer;margin:6px 0 14px}.divider{display:flex;align-items:center;gap:10px;color:#98a2b3;margin:10px 0}.divider:before,.divider:after{content:"";height:1px;background:#e4e8ef;flex:1}.loginHint{text-align:center;font-size:13px!important;margin-top:12px}.appHidden{display:none!important}
+</style>
+
+<!-- REAL OTP SETUP
+     Create a Firebase project, enable Authentication > Phone, add this site's
+     domain to Authorized domains, then replace the placeholder config below.
+     Until configured, the portal will show a setup message instead of pretending
+     that an OTP was actually sent.
+-->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import {
+    getAuth,
+    RecaptchaVerifier,
+    signInWithPhoneNumber
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAlEjBlnkQYfWdXyWNLDTwq_LTNWc6T3r8",
+    authDomain: "school-portal-79826.firebaseapp.com",
+    projectId: "school-portal-79826",
+    storageBucket: "school-portal-79826.firebasestorage.app",
+    messagingSenderId: "985313107051",
+    appId: "1:985313107051:web:2d2c6930243c58114c652e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.firebaseConfirmation = null;
+  window.firebaseRecaptcha = null;
+
+  function showOtpUI(message) {
+    document.getElementById("otpStep").style.display = "block";
+    document.getElementById("sendOtpBtn").style.display = "inline-flex";
+    document.getElementById("verifyOtpBtn").style.display = "inline-flex";
+    const msg = document.getElementById("accountLoginMsg");
+    msg.textContent = message;
+    msg.className = "msg success";
+  }
+
+  window.startRealOtp = async function(phone) {
+    const msg = document.getElementById("accountLoginMsg");
+
+    try {
+      if (!window.firebaseRecaptcha) {
+        window.firebaseRecaptcha = new RecaptchaVerifier(
+          auth,
+          "recaptcha-container",
+          { size: "invisible" }
+        );
+        await window.firebaseRecaptcha.render();
+      }
+
+      window.firebaseConfirmation = await signInWithPhoneNumber(
+        auth,
+        "+91" + phone,
+        window.firebaseRecaptcha
+      );
+
+      showOtpUI("OTP sent to your phone. Enter it below.");
+      document.getElementById("otpInput").focus();
+      return true;
+    } catch (err) {
+      console.error("Firebase OTP error:", err);
+
+      // If reCAPTCHA became invalid, rebuild it for the next attempt.
+      try {
+        if (window.firebaseRecaptcha) {
+          window.firebaseRecaptcha.clear();
+        }
+      } catch (_) {}
+
+      window.firebaseRecaptcha = null;
+      window.firebaseConfirmation = null;
+
+      let text = "Could not send OTP. ";
+      if (err && err.code === "auth/operation-not-allowed") {
+        text += "Enable Phone sign-in in Firebase Authentication.";
+      } else if (err && err.code === "auth/unauthorized-domain") {
+        text += "Add piyushbhatt70172-pixel.github.io to Firebase Authorized domains.";
+      } else if (err && err.code === "auth/invalid-phone-number") {
+        text += "The phone number is invalid.";
+      } else if (err && err.code === "auth/too-many-requests") {
+        text += "Too many attempts. Try again later.";
+      } else {
+        text += "Check Firebase Phone Auth and SMS region settings.";
+      }
+
+      msg.textContent = text;
+      msg.className = "msg error";
+      return false;
+    }
+  };
+
+  window.verifyRealOtp = async function() {
+    const code = document.getElementById("otpInput").value.trim();
+    const msg = document.getElementById("accountLoginMsg");
+
+    if (!/^\d{6}$/.test(code)) {
+      msg.textContent = "Enter the 6-digit OTP.";
+      msg.className = "msg error";
+      return;
+    }
+
+    if (!window.firebaseConfirmation) {
+      msg.textContent = "Send the OTP first.";
+      msg.className = "msg error";
+      return;
+    }
+
+    try {
+      await window.firebaseConfirmation.confirm(code);
+      msg.textContent = "Phone verified. Signing you in...";
+      msg.className = "msg success";
+
+      if (typeof window.finishAccountLogin === "function") {
+        window.finishAccountLogin();
+      }
+    } catch (err) {
+      console.error("Firebase verification error:", err);
+      msg.textContent = "Incorrect or expired OTP. Try again.";
+      msg.className = "msg error";
+    }
+  };
+</script>
+
+</head>
+<body>
+<div id="loginScreen">
+  <div class="loginBox">
+    <div class="loginLogo">School<span>Portal</span></div>
+    <h2>Welcome 👋</h2>
+    <p>Sign in to continue to your school account.</p>
+    <input id="accountPhone" class="input" type="tel" inputmode="numeric" placeholder="Phone number" autocomplete="tel">
+    <input id="accountCode" class="input" type="text" inputmode="numeric" placeholder="3-digit Teacher / 4+ digit Student SR number" autocomplete="off">
+    <button id="accountLoginBtn" class="btn primary" style="width:100%;margin:4px 0" type="button">Send OTP</button>
+
+    <div id="otpStep" style="display:none;margin-top:10px">
+      <input id="otpInput" class="input" type="tel" inputmode="numeric"
+             maxlength="6" placeholder="Enter 6-digit OTP" autocomplete="one-time-code">
+      <button id="verifyOtpBtn" class="btn success" style="width:100%" type="button">
+        Verify OTP
+      </button>
+      <button id="sendOtpBtn" class="btn secondary" style="width:100%;margin-top:6px" type="button">
+        Send OTP Again
+      </button>
+    </div>
+
+    <div id="recaptcha-container"></div>
+    <p id="accountLoginMsg" class="msg"></p>
+    <p class="loginHint">Students use their <b>4+ digit SR number</b>. Teachers use a <b>3-digit code</b>.</p>
+  </div>
+</div>
+
+<header><h1>School<span>Portal</span></h1><div class="menu">☰</div></header>
+<div class="tabs">
+<button id="studentTab" class="tab active" type="button">🎓 Student</button>
+<button id="teacherTab" class="tab" type="button">👨‍🏫 Teacher 🔒</button>
+<button id="adminTab" class="tab" type="button">🛠️ Admin 🔒</button>
+</div>
+
+<section id="student" class="page active">
+<div class="hero"><h2>Welcome back, Alex 👋</h2><div>Student Dashboard • Class 12 • Roll No. 24</div></div>
+<h2>Student Overview</h2>
+<div class="grid"><div class="card"><h3>📅 Attendance</h3><div id="studentAttendance" class="big">94%</div></div><div class="card"><h3>📝 Marks</h3><div id="studentMarks" class="big">86%</div></div><div class="card"><h3>📚 Assignments</h3><div id="assignmentCount" class="big">0</div></div></div>
+<div class="panel"><h2>📢 Notices</h2><div id="studentNotices"></div></div>
+<div class="panel"><h2>📚 Assignments</h2><div id="studentAssignments"></div></div>
+<div class="panel"><h2>📝 Absence Application</h2><p class="muted">If you cannot attend school, submit an application for teacher approval.</p><label>Date</label><input id="absenceDate" class="input" type="date"><label>Reason</label><textarea id="absenceReason" placeholder="Enter your reason..."></textarea><button id="submitAbsence" class="btn primary" type="button">Submit Application</button><p id="absenceMsg" class="msg"></p><div id="myApplications"></div></div>
+</section>
+
+<section id="teacher" class="page">
+<div id="teacherLogin" class="panel"><h2>👨‍🏫 Teacher Login</h2><input id="teacherPassword" class="input" type="password" placeholder="Teacher password"><button id="teacherLoginBtn" class="btn primary" type="button">Login</button><button id="teacherCancelBtn" class="btn secondary" type="button">Cancel</button><p id="teacherMsg" class="msg"></p></div>
+<div id="teacherPanel" class="hidden">
+<div class="hero"><h2>Teacher Dashboard 👨‍🏫</h2><div>Manage students, attendance, marks, assignments, notices and leave applications.</div></div>
+<div class="panel"><h2>👨‍🎓 Student Records</h2><div class="grid"><input id="studentName" class="input" placeholder="Student name"><input id="studentRoll" class="input" placeholder="Roll number"><input id="studentCode" class="input" type="text" inputmode="numeric" placeholder="Student SR number (4+ digits)"><input id="studentPhone" class="input" type="tel" inputmode="numeric" placeholder="Student phone number (10 digits)"><input id="studentAttendanceInput" class="input" type="number" min="0" max="100" placeholder="Attendance %"><input id="studentMarksInput" class="input" type="number" min="0" max="100" placeholder="Marks %"></div><div class="row"><button id="saveStudentBtn" class="btn primary" type="button">Add Student</button><button id="clearStudentBtn" class="btn secondary" type="button">Clear</button></div><input id="studentSearch" class="input" placeholder="🔎 Search student"><div id="teacherStudents"></div></div>
+<div class="panel"><h2>📋 Absence Applications <span id="pendingCount" class="status pending">0 pending</span></h2><div id="teacherApplications"></div></div>
+<div class="panel"><h2>📚 Assignments</h2><input id="assignmentTitle" class="input" placeholder="Assignment title"><input id="assignmentDate" class="input" type="date"><button id="addAssignmentBtn" class="btn primary" type="button">Add Assignment</button><div id="teacherAssignments"></div></div>
+<div class="panel"><h2>📢 Notices</h2><input id="noticeTitle" class="input" placeholder="Notice title"><textarea id="noticeMessage" placeholder="Notice message"></textarea><button id="addNoticeBtn" class="btn primary" type="button">Publish Notice</button></div>
+<button id="teacherLogout" class="btn secondary" type="button">Logout</button>
+</div></section>
+
+<section id="admin" class="page">
+<div id="adminLogin" class="panel"><h2>🛠️ Admin Login</h2><input id="adminPassword" class="input" type="password" placeholder="Admin password"><button id="adminLoginBtn" class="btn primary" type="button">Login</button><button id="adminCancelBtn" class="btn secondary" type="button">Cancel</button><p id="adminMsg" class="msg"></p></div>
+<div id="adminPanel" class="hidden"><div class="hero"><h2>Admin Dashboard 🛠️</h2><div>School portal administration.</div></div><div class="panel"><h2>👨‍🎓 Student Overview</h2><div id="adminStudents"></div></div><div class="panel"><h2>🔐 Access Management</h2>
+<input id="newTeacherCode" class="input" inputmode="numeric" maxlength="3" placeholder="New 3-digit teacher code">
+<button id="changeTeacherCode" class="btn primary" type="button">Change Teacher Code</button>
+<input id="newTeacherPassword" class="input" placeholder="New teacher password">
+<button id="changeTeacherPassword" class="btn primary" type="button">Change Teacher Password</button>
+<input id="newAdminPassword" class="input" placeholder="New admin password">
+<button id="changeAdminPassword" class="btn primary" type="button">Change Admin Password</button>
+<p id="passwordMsg" class="msg"></p></div><button id="adminLogout" class="btn secondary" type="button">Logout</button></div></section>
+
+<script>
+const defaults={teacherCode:'583',teacherPhone:'9876543200',teacherPassword:'teacher123',adminPassword:'admin123',students:[{name:'Alex Sharma',roll:'24',srNumber:'4827',phone:'9876543210',attendance:94,marks:86},{name:'Rahul Sharma',roll:'25',srNumber:'6153',phone:'9876543211',attendance:91,marks:82},{name:'Ananya Singh',roll:'26',srNumber:'7314',phone:'9876543212',attendance:97,marks:91}],assignments:[{title:'Physics Assignment',date:'2026-10-05'}],notices:[{title:'Half-Yearly Results',message:'Results will be published soon.',date:'Today'}],applications:[]};
+const storedData=JSON.parse(localStorage.getItem('schoolPortalData2')||'null');
+let data=storedData?{...defaults,...storedData,students:(storedData.students||defaults.students).map(s=>({...s,srNumber:String(s.srNumber||s.code||''),phone:String(s.phone||'')}))}:defaults;
+if(!data.teacherCode)data.teacherCode=defaults.teacherCode;
+function save(){localStorage.setItem('schoolPortalData2',JSON.stringify(data));renderAll()}
+function page(name,tab){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(name).classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));if(tab)tab.classList.add('active');window.scrollTo(0,0)}
+function openLogin(role){page(role);document.getElementById(role+'Login').classList.remove('hidden');document.getElementById(role+'Panel').classList.add('hidden');document.getElementById(role+'Msg').textContent='';}
+function login(role){const val=document.getElementById(role+'Password').value;const correct=role==='teacher'?data.teacherPassword:data.adminPassword;if(val===correct){document.getElementById(role+'Login').classList.add('hidden');document.getElementById(role+'Panel').classList.remove('hidden');if(role==='teacher')renderTeacher();if(role==='admin')renderAdmin()}else{document.getElementById(role+'Msg').className='msg error';document.getElementById(role+'Msg').textContent='Incorrect password. Try again.'}}
+let currentStudent=null;
+function renderStudent(){const s=currentStudent||data.students[0]||{attendance:0,marks:0};document.getElementById('studentAttendance').textContent=s.attendance+'%';document.getElementById('studentMarks').textContent=s.marks+'%';document.getElementById('assignmentCount').textContent=data.assignments.length;document.getElementById('studentNotices').innerHTML=data.notices.length?data.notices.map(n=>`<div class="notice"><b>${esc(n.title)}</b><p>${esc(n.message)}</p><small class="muted">${esc(n.date||'')}</small></div>`).join(''):'<p class="muted">No notices.</p>';document.getElementById('studentAssignments').innerHTML=data.assignments.length?data.assignments.map(a=>`<div class="assignment"><b>${esc(a.title)}</b><br><small class="muted">Due: ${esc(a.date||'')}</small></div>`).join(''):'<p class="muted">No assignments.</p>';document.getElementById('myApplications').innerHTML=data.applications.length?data.applications.map(a=>`<div class="application"><b>${esc(a.date)}</b> — ${esc(a.reason)}<br><span class="status ${a.status.toLowerCase()}">${esc(a.status)}</span></div>`).join(''):'<p class="muted">No applications submitted.</p>'}
+function renderTeacher(){renderTeacherStudents();renderApplications();document.getElementById('teacherAssignments').innerHTML=data.assignments.map((a,i)=>`<div class="assignment"><b>${esc(a.title)}</b> — ${esc(a.date)} <button class="btn danger deleteAssignment" data-i="${i}" type="button">Delete</button></div>`).join('')||'<p class="muted">No assignments.</p>'}
+function renderTeacherStudents(){const q=(document.getElementById('studentSearch')?.value||'').toLowerCase();const arr=data.students.filter(s=>s.name.toLowerCase().includes(q)||String(s.roll).includes(q));document.getElementById('teacherStudents').innerHTML='<div class="tablewrap"><table><tr><th>Name</th><th>Roll</th><th>SR Number</th><th>Attendance</th><th>Marks</th><th>Actions</th></tr>'+arr.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.roll)}</td><td><b>${esc(s.srNumber||s.code||'')}</b></td><td>${s.attendance}%</td><td>${s.marks}%</td><td><button class="btn secondary editStudent" data-roll="${esc(s.roll)}" type="button">Edit</button><button class="btn danger deleteStudent" data-roll="${esc(s.roll)}" type="button">Delete</button></td></tr>`).join('')+'</table></div>'}
+function renderApplications(){const pending=data.applications.filter(a=>a.status==='Pending').length;document.getElementById('pendingCount').textContent=pending+' pending';document.getElementById('teacherApplications').innerHTML=data.applications.length?data.applications.map((a,i)=>`<div class="application"><b>${esc(a.student)}</b> (Roll ${esc(a.roll)})<br>Date: ${esc(a.date)}<br>Reason: ${esc(a.reason)}<br><span class="status ${a.status.toLowerCase()}">${esc(a.status)}</span>${a.status==='Pending'?`<div class="row"><button class="btn success acceptApp" data-i="${i}" type="button">Accept</button><button class="btn danger rejectApp" data-i="${i}" type="button">Reject</button></div>`:''}</div>`).join(''):'<p class="muted">No applications.</p>'}
+function renderAdmin(){document.getElementById('adminStudents').innerHTML='<div class="tablewrap"><table><tr><th>Name</th><th>Roll</th><th>Attendance</th><th>Marks</th></tr>'+data.students.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.roll)}</td><td><b>${esc(s.srNumber||s.code||'')}</b></td><td>${s.attendance}%</td><td>${s.marks}%</td></tr>`).join('')+'</table></div>'}
+function renderAll(){renderStudent();if(!document.getElementById('teacherPanel').classList.contains('hidden'))renderTeacher();if(!document.getElementById('adminPanel').classList.contains('hidden'))renderAdmin()}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+
+document.getElementById('studentTab').addEventListener('click',()=>page('student',document.getElementById('studentTab')));
+document.getElementById('teacherTab').addEventListener('click',()=>openLogin('teacher'));
+document.getElementById('adminTab').addEventListener('click',()=>openLogin('admin'));
+document.getElementById('teacherLoginBtn').addEventListener('click',()=>login('teacher'));
+document.getElementById('adminLoginBtn').addEventListener('click',()=>login('admin'));
+document.getElementById('teacherCancelBtn').addEventListener('click',()=>page('student',document.getElementById('studentTab')));
+document.getElementById('adminCancelBtn').addEventListener('click',()=>page('student',document.getElementById('studentTab')));
+document.getElementById('teacherLogout').addEventListener('click',()=>openLogin('teacher'));
+document.getElementById('adminLogout').addEventListener('click',()=>openLogin('admin'));
+document.getElementById('studentSearch').addEventListener('input',renderTeacherStudents);
+document.getElementById('clearStudentBtn').addEventListener('click',()=>{document.getElementById('studentCode').value='';document.getElementById('studentPhone').value='';['studentName','studentRoll','studentAttendanceInput','studentMarksInput'].forEach(id=>document.getElementById(id).value='');document.getElementById('saveStudentBtn').dataset.edit='';document.getElementById('saveStudentBtn').textContent='Add Student'});
+document.getElementById('saveStudentBtn').addEventListener('click',()=>{const name=document.getElementById('studentName').value.trim(),roll=document.getElementById('studentRoll').value.trim(),srNumber=document.getElementById('studentCode').value.trim(),phone=document.getElementById('studentPhone').value.trim(),attendance=Number(document.getElementById('studentAttendanceInput').value),marks=Number(document.getElementById('studentMarksInput').value);if(!name||!roll||!/^\d{4,}$/.test(srNumber)||!/^\d{10}$/.test(phone)||Number.isNaN(attendance)||Number.isNaN(marks)){alert('Fill all student fields. SR number must be 4 or more digits.');return}const edit=document.getElementById('saveStudentBtn').dataset.edit;const duplicate=data.students.find(s=>String(s.srNumber||s.code)===srNumber&&String(s.roll)!==String(edit||''));if(duplicate){alert('That SR number is already assigned to another student.');return}const obj={name,roll,srNumber,phone,attendance,marks};if(edit){const i=data.students.findIndex(s=>String(s.roll)===edit);if(i>=0)data.students[i]=obj}else data.students.push(obj);document.getElementById('clearStudentBtn').click();save()});
+document.getElementById('addAssignmentBtn').addEventListener('click',()=>{const title=document.getElementById('assignmentTitle').value.trim(),date=document.getElementById('assignmentDate').value;if(!title){alert('Enter assignment title.');return}data.assignments.push({title,date});document.getElementById('assignmentTitle').value='';document.getElementById('assignmentDate').value='';save()});
+document.getElementById('addNoticeBtn').addEventListener('click',()=>{const title=document.getElementById('noticeTitle').value.trim(),message=document.getElementById('noticeMessage').value.trim();if(!title||!message){alert('Enter title and message.');return}data.notices.unshift({title,message,date:'Today'});document.getElementById('noticeTitle').value='';document.getElementById('noticeMessage').value='';save()});
+document.getElementById('submitAbsence').addEventListener('click',()=>{const date=document.getElementById('absenceDate').value,reason=document.getElementById('absenceReason').value.trim();if(!date||!reason){document.getElementById('absenceMsg').textContent='Please enter date and reason.';document.getElementById('absenceMsg').className='msg error';return}if(data.applications.some(a=>a.date===date&&a.status==='Pending')){document.getElementById('absenceMsg').textContent='You already have a pending application for this date.';document.getElementById('absenceMsg').className='msg error';return}const s=currentStudent||data.students[0];data.applications.push({student:s.name,roll:s.roll,date,reason,status:'Pending'});document.getElementById('absenceDate').value='';document.getElementById('absenceReason').value='';document.getElementById('absenceMsg').textContent='Application submitted!';document.getElementById('absenceMsg').className='msg successText';save()});
+document.addEventListener('click',e=>{const t=e.target;if(t.classList.contains('acceptApp')){data.applications[Number(t.dataset.i)].status='Approved';save()}if(t.classList.contains('rejectApp')){data.applications[Number(t.dataset.i)].status='Rejected';save()}if(t.classList.contains('deleteAssignment')){data.assignments.splice(Number(t.dataset.i),1);save()}if(t.classList.contains('deleteStudent')){data.students=data.students.filter(s=>String(s.roll)!==String(t.dataset.roll));save()}if(t.classList.contains('editStudent')){const s=data.students.find(x=>String(x.roll)===String(t.dataset.roll));if(s){document.getElementById('studentName').value=s.name;document.getElementById('studentRoll').value=s.roll;document.getElementById('studentCode').value=s.srNumber||s.code||'';document.getElementById('studentPhone').value=s.phone||'';document.getElementById('studentAttendanceInput').value=s.attendance;document.getElementById('studentMarksInput').value=s.marks;document.getElementById('saveStudentBtn').dataset.edit=s.roll;document.getElementById('saveStudentBtn').textContent='Update Student';window.scrollTo(0,0)}}});
+document.getElementById('changeTeacherPassword').addEventListener('click',()=>{const p=document.getElementById('newTeacherPassword').value.trim();if(p.length<4){document.getElementById('passwordMsg').textContent='Password must be at least 4 characters.';return}data.teacherPassword=p;document.getElementById('newTeacherPassword').value='';document.getElementById('passwordMsg').textContent='Teacher password changed.';save()});
+document.getElementById('changeAdminPassword').addEventListener('click',()=>{const p=document.getElementById('newAdminPassword').value.trim();if(p.length<4){document.getElementById('passwordMsg').textContent='Password must be at least 4 characters.';return}data.adminPassword=p;document.getElementById('newAdminPassword').value='';document.getElementById('passwordMsg').textContent='Admin password changed.';save()});
+renderAll();
+
+// Starting account login: phone number + access code are required.
+localStorage.removeItem('schoolPortalSignedIn');
+const loginScreen=document.getElementById('loginScreen');
+function enterPortal(){loginScreen.classList.add('appHidden');document.body.style.overflow='auto';localStorage.setItem('schoolPortalSignedIn','1');}
+window.checkAccountForOtp=function(){
+  const phone=document.getElementById('accountPhone').value.trim();
+  const code=document.getElementById('accountCode').value.trim();
+  const msg=document.getElementById('accountLoginMsg');
+
+  if(!/^\d{10}$/.test(phone)){
+    msg.textContent='Enter a valid 10-digit phone number.';
+    msg.className='msg error';
+    return;
+  }
+  if(!/^\d{3,}$/.test(code)){
+    msg.textContent='Enter a 3-digit teacher code or a 4+ digit student SR number.';
+    msg.className='msg error';
+    return;
+  }
+
+  let matched=false;
+  if(code.length===3 && code===String(data.teacherCode||'') && phone===String(data.teacherPhone||'')){
+    window.pendingAccountType='teacher';
+    window.pendingStudent=null;
+    matched=true;
+  } else if(code.length>=4){
+    const student=data.students.find(s=>String(s.srNumber||s.code)===code && String(s.phone||'')===phone);
+    if(student){
+      window.pendingAccountType='student';
+      window.pendingStudent=student;
+      matched=true;
+    }
+  }
+
+  if(!matched){
+    msg.textContent='Phone number and code do not match a registered account.';
+    msg.className='msg error';
+    return;
+  }
+
+  window.pendingPhone=phone;
+  if(typeof window.startRealOtp==='function'){
+    window.startRealOtp(phone);
+  }
+}
+document.getElementById('accountCode').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'')});
+document.getElementById('accountCode').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('accountLoginBtn').click()});
+document.getElementById('changeTeacherCode').addEventListener('click',()=>{
+  const c=document.getElementById('newTeacherCode').value.trim();
+  if(!/^\d{3}$/.test(c)){document.getElementById('passwordMsg').textContent='Teacher code must be exactly 3 digits.';document.getElementById('passwordMsg').className='msg error';return}
+  data.teacherCode=c;
+  document.getElementById('newTeacherCode').value='';
+  document.getElementById('passwordMsg').textContent='Teacher code changed.';
+  document.getElementById('passwordMsg').className='msg successText';
+  save();
+});
+
+</script>
+
+
+<script>
+window.finishAccountLogin = function(){
+  if(window.pendingAccountType === 'teacher'){
+    currentStudent = null;
+    enterPortal();
+    openLogin('teacher');
+    document.getElementById('teacherPassword').value = data.teacherPassword;
+    login('teacher');
+  } else if(window.pendingAccountType === 'student' && window.pendingStudent){
+    currentStudent = window.pendingStudent;
+    document.querySelector('#student .hero h2').textContent =
+      'Welcome back, ' + currentStudent.name + ' 👋';
+    document.querySelector('#student .hero div').textContent =
+      'Student Dashboard • Class 12 • Roll No. ' + currentStudent.roll;
+    renderStudent();
+    enterPortal();
+    page('student', document.getElementById('studentTab'));
+  }
+};
+
+window.checkAccountForOtp = function(){
+  const phone = document.getElementById('accountPhone').value.trim();
+  const code = document.getElementById('accountCode').value.trim();
+  const msg = document.getElementById('accountLoginMsg');
+
+  if(!/^\d{10}$/.test(phone)){
+    msg.textContent = 'Enter a valid 10-digit Indian phone number.';
+    msg.className = 'msg error';
+    return;
+  }
+
+  if(!/^\d{3,}$/.test(code)){
+    msg.textContent = 'Enter a 3-digit teacher code or a 4+ digit student SR number.';
+    msg.className = 'msg error';
+    return;
+  }
+
+  let matched = false;
+
+  if(code.length === 3 &&
+     code === String(data.teacherCode || '') &&
+     phone === String(data.teacherPhone || '')){
+    window.pendingAccountType = 'teacher';
+    window.pendingStudent = null;
+    matched = true;
+  } else if(code.length >= 4){
+    const student = data.students.find(s =>
+      String(s.srNumber || s.code || '') === code &&
+      String(s.phone || '') === phone
+    );
+
+    if(student){
+      window.pendingAccountType = 'student';
+      window.pendingStudent = student;
+      matched = true;
+    }
+  }
+
+  if(!matched){
+    msg.textContent = 'Phone number and code do not match a registered account.';
+    msg.className = 'msg error';
+    return;
+  }
+
+  window.pendingPhone = phone;
+  window.startRealOtp(phone);
+};
+
+document.getElementById('accountLoginBtn').addEventListener('click', function(){
+  document.getElementById('otpStep').style.display = 'none';
+  document.getElementById('accountLoginMsg').textContent = '';
+  window.checkAccountForOtp();
+});
+
+document.getElementById('sendOtpBtn').addEventListener('click', function(){
+  window.checkAccountForOtp();
+});
+
+document.getElementById('verifyOtpBtn').addEventListener('click', function(){
+  window.verifyRealOtp();
+});
+
+document.getElementById('accountPhone').addEventListener('input', function(e){
+  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+});
+
+document.getElementById('accountCode').addEventListener('input', function(e){
+  e.target.value = e.target.value.replace(/\D/g, '');
+});
+
+document.getElementById('otpInput').addEventListener('input', function(e){
+  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
+});
+
+document.getElementById('accountPhone').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('accountLoginBtn').click();
+});
+
+document.getElementById('accountCode').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('accountLoginBtn').click();
+});
+
+document.getElementById('otpInput').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') document.getElementById('verifyOtpBtn').click();
+});
+
+document.getElementById('changeTeacherCode').addEventListener('click', ()=>{
+  const c = document.getElementById('newTeacherCode').value.trim();
+  if(!/^\d{3}$/.test(c)){
+    document.getElementById('passwordMsg').textContent = 'Teacher code must be exactly 3 digits.';
+    document.getElementById('passwordMsg').className = 'msg error';
+    return;
+  }
+  data.teacherCode = c;
+  document.getElementById('newTeacherCode').value = '';
+  document.getElementById('passwordMsg').textContent = 'Teacher code changed.';
+  document.getElementById('passwordMsg').className = 'msg successText';
+  save();
+});
+</script>
+</body></html>
