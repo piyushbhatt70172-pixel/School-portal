@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>School Portal</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f7fb;
+  color: #172033;
+}
+
+header {
+  background: #14213d;
+  color: white;
+  padding: 18px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #4da3ff;
+}
+
+.menu-btn {
+  background: #24385f;
+  border: none;
+  color: white;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 25px 18px 90px;
+}
+
+.hero {
+  background: linear-gradient(135deg, #14213d, #2455a4);
+  color: white;
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 22px;
+}
+
+.hero h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.hero p {
+  opacity: .85;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 22px;
+}
+
+.tab {
+  border: none;
+  background: white;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.tab.active {
+  background: #2455a4;
+  color: white;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.section-title {
+  margin: 20px 0 12px;
+  font-size: 20px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.06);
+}
+
+.card .icon {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+
+.card h3 {
+  font-size: 14px;
+  color: #667085;
+  margin-bottom: 6px;
+}
+
+.card strong {
+  font-size: 25px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.feature {
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: .2s;
+  border: 1px solid #e7ebf2;
+}
+
+.feature:hover {
+  transform: translateY(-2px);
+}
+
+.feature h3 {
+  margin: 10px 0 6px;
+}
+
+.feature p {
+  color: #667085;
+  font-size: 14px;
+}
+
+.notice {
+  background: white;
+  padding: 18px;
+  border-radius: 15px;
+  margin-bottom: 12px;
+  border-left: 4px solid #2455a4;
+}
+
+.notice small {
+  color: #667085;
+}
+
+.application {
+  background: white;
+  padding: 18px;
+  border-radius: 15px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status {
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.approved {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 20px;
+  background: white;
+  padding: 25px;
+  border-radius: 18px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #2455a4;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  font-weight: bold;
+}
+
+.profile-info p {
+  margin: 9px 0;
+}
+
+.profile-info b {
+  color: #667085;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #edf0f5;
+}
+
+th {
+  background: #f0f4fa;
+}
+
+footer {
+  text-align: center;
+  color: #667085;
+  padding: 25px;
+  font-size: 13px;
+}
+
+@media (max-width: 800px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 550px) {
+  .cards,
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile {
+    grid-template-columns: 1fr;
+  }
+
+  .application {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">School<span>Portal</span></div>
+    <button class="menu-btn" onclick="alert('More features coming soon!')">☰</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Welcome back, Alex 👋</h1>
+    <p>Student Dashboard • Class 12 • Roll No. 24</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showPage('student', this)">🎓 Student</button>
+    <button class="tab" onclick="showPage('teacher', this)">👨‍🏫 Teacher</button>
+    <button class="tab" onclick="showPage('admin', this)">🛠️ Admin</button>
+  </div>
+
+  <!-- STUDENT -->
+  <section id="student" class="page active">
+
+    <h2 class="section-title">Student Overview</h2>
+
+    <div class="cards">
+      <div class="card">
+        <div class="icon">📅</div>
+        <h3>Attendance</h3>
+        <strong>94%</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">📝</div>
+        <h3>Applications</h3>
+        <strong>2</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">📢</div>
+        <h3>Notices</h3>
+        <strong>3</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">💰</div>
+        <h3>Fees Due</h3>
+        <strong>₹0</strong>
+      </div>
+    </div>
+
+    <h2 class="section-title">Student Services</h2>
+
+    <div class="feature-grid">
+
+      <div class="feature" onclick="openSection('attendance')">
+        <div class="icon">📊</div>
+        <h3>Attendance</h3>
+        <p>View your attendance record.</p>
+      </div>
+
+      <div class="feature" onclick="openSection('applications')">
+        <div class="icon">📝</div>
+        <h3>Absence Application</h3>
+        <p>Submit and track applications.</p>
+      </div>
+
+      <div class="feature" onclick="openSection('notices')">
+        <div class="icon">📢</div>
+        <h3>Notices</h3>
+        <p>View school announcements.</p>
+      </div>
+
+      <div class="feature" onclick="openSection('fees')">
+        <div class="icon">💰</div>
+        <h3>Fees</h3>
+        <p>Check your fee status.</p>
+      </div>
+
+      <div class="feature" onclick="openSection('profile')">
+        <div class="icon">👤</div>
+        <h3>Profile</h3>
+        <p>View your student information.</p>
+      </div>
+
+    </div>
+
+    <div id="studentContent"></div>
+
+  </section>
+
+  <!-- TEACHER -->
+  <section id="teacher" class="page">
+
+    <h2 class="section-title">Teacher Dashboard</h2>
+
+    <div class="cards">
+      <div class="card">
+        <div class="icon">👨‍🎓</div>
+        <h3>Total Students</h3>
+        <strong>42</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">📅</div>
+        <h3>Today's Attendance</h3>
+        <strong>95%</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">📝</div>
+        <h3>Pending Requests</h3>
+        <strong>3</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">📢</div>
+        <h3>Class Notices</h3>
+        <strong>4</strong>
+      </div>
+    </div>
+
+    <h2 class="section-title">Recent Absence Requests</h2>
+
+    <div class="application">
+      <div>
+        <strong>Rahul Sharma</strong>
+        <p>Medical appointment • 2 Oct</p>
+      </div>
+      <span class="status pending">Pending</span>
+    </div>
+
+    <div class="application">
+      <div>
+        <strong>Ananya Singh</strong>
+        <p>Family matter • 1 Oct</p>
+      </div>
+      <span class="status approved">Approved</span>
+    </div>
+
+  </section>
+
+  <!-- ADMIN -->
+  <section id="admin" class="page">
+
+    <h2 class="section-title">Admin Dashboard</h2>
+
+    <div class="cards">
+      <div class="card">
+        <div class="icon">👨‍🎓</div>
+        <h3>Students</h3>
+        <strong>183</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">👨‍🏫</div>
+        <h3>Teachers</h3>
+        <strong>24</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">🏫</div>
+        <h3>Classes</h3>
+        <strong>8</strong>
+      </div>
+
+      <div class="card">
+        <div class="icon">📊</div>
+        <h3>Attendance</h3>
+        <strong>94%</strong>
+      </div>
+    </div>
+
+    <h2 class="section-title">System Overview</h2>
+
+    <table>
+      <tr>
+        <th>Module</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Student Management</td>
+        <td>Active</td>
+      </tr>
+      <tr>
+        <td>Teacher Portal</td>
+        <td>Active</td>
+      </tr>
+      <tr>
+        <td>Attendance</td>
+        <td>Active</td>
+      </tr>
+      <tr>
+        <td>Fees</td>
+        <td>Prototype</td>
+      </tr>
+    </table>
+
+  </section>
+
+</div>
+
+<footer>
+  School Portal • Prototype • Demo data only
+</footer>
+
+<script>
+function showPage(page, button) {
+
+  document.querySelectorAll('.page').forEach(function(section) {
+    section.classList.remove('active');
+  });
+
+  document.getElementById(page).classList.add('active');
+
+  document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.classList.remove('active');
+  });
+
+  button.classList.add('active');
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+function openSection(section) {
+
+  const content = document.getElementById('studentContent');
+
+  if (section === 'attendance') {
+    content.innerHTML = `
+      <h2 class="section-title">Attendance</h2>
+      <div class="card">
+        <h3>Current Attendance</h3>
+        <strong>94%</strong>
+        <p style="margin-top:10px">Present: 47 days • Absent: 3 days</p>
+      </div>
+    `;
+  }
+
+  if (section === 'applications') {
+    content.innerHTML = `
+      <h2 class="section-title">Absence Applications</h2>
+      <div class="application">
+        <div>
+          <strong>Medical appointment</strong>
+          <p>2 October 2026</p>
+        </div>
+        <span class="status pending">Pending</span>
+      </div>
+      <div class="application">
+        <div>
+          <strong>Illness</strong>
+          <p>20 September 2026</p>
+        </div>
+        <span class="status approved">Approved</span>
+      </div>
+    `;
+  }
+
+  if (section === 'notices') {
+    content.innerHTML = `
+      <h2 class="section-title">School Notices</h2>
+      <div class="notice">
+        <strong>Half-Yearly Results</strong>
+        <p>Results will be published soon.</p>
+        <small>Today</small>
+      </div>
+      <div class="notice">
+        <strong>School Assembly</strong>
+        <p>All students must attend Monday's assembly.</p>
+        <small>Yesterday</small>
+      </div>
+      <div class="notice">
+        <strong>Holiday Notice</strong>
+        <p>School will remain closed on the upcoming holiday.</p>
+        <small>2 days ago</small>
+      </div>
+    `;
+  }
+
+  if (section === 'fees') {
+    content.innerHTML = `
+      <h2 class="section-title">Fee Status</h2>
+      <div class="card">
+        <h3>Current Balance</h3>
+        <strong>₹0</strong>
+        <p style="margin-top:10px">All demo fees are cleared.</p>
+      </div>
+    `;
+  }
+
+  if (section === 'profile') {
+    content.innerHTML = `
+      <h2 class="section-title">Student Profile</h2>
+      <div class="profile">
+        <div class="avatar">A</div>
+        <div class="profile-info">
+          <p><b>Name:</b> Alex Sharma</p>
+          <p><b>Class:</b> 12 Science</p>
+          <p><b>Roll No:</b> 24</p>
+          <p><b>Student ID:</b> STU-1024</p>
+          <p><b>Attendance:</b> 94%</p>
+        </div>
+      </div>
+    `;
+  }
+
+  content.scrollIntoView({
+    behavior: 'smooth'
+  });
+}
+</script>
+
+</body>
+  </html>
