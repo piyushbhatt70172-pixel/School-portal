@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#14213d">
+<title>School Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+header{background:#14213d;color:#fff;padding:16px 18px;position:sticky;top:0;z-index:20}
+.header-inner{max-width:1100px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:22px;font-weight:800}.logo span{color:#4da3ff}
+.menu-btn,.primary,.danger,.secondary{border:0;border-radius:10px;padding:11px 15px;font-weight:700;cursor:pointer}
+.menu-btn{background:#24385f;color:#fff}
+.container{max-width:1100px;margin:auto;padding:22px 18px 80px}
+.hero{background:linear-gradient(135deg,#14213d,#2455a4);color:#fff;border-radius:20px;padding:26px;margin-bottom:20px}
+.hero h1{font-size:28px;margin-bottom:8px}.hero p{opacity:.9}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-bottom:20px}
+.tab{border:0;background:#fff;padding:12px 18px;border-radius:12px;cursor:pointer;font-weight:700;white-space:nowrap}
+.tab.active{background:#2455a4;color:#fff}
+.page{display:none}.page.active{display:block}
+.section-title{margin:20px 0 12px;font-size:20px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card,.feature,.panel,.notice,.application,.profile{background:#fff;border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,.06)}
+.card{padding:19px}.card .icon{font-size:25px;margin-bottom:9px}.card h3{font-size:14px;color:#667085;margin-bottom:6px}.card strong{font-size:25px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.feature{padding:20px;cursor:pointer;border:1px solid #e7ebf2}.feature h3{margin:10px 0 6px}.feature p{color:#667085;font-size:14px}
+.panel{padding:20px;margin-bottom:16px}.panel h3{margin-bottom:14px}
+.notice{padding:16px;margin-bottom:10px;border-left:4px solid #2455a4}
+.application{padding:16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.status{padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700}.pending{background:#fff3cd;color:#856404}.approved{background:#d1fae5;color:#065f46}
+.profile{display:grid;grid-template-columns:130px 1fr;gap:20px;padding:22px}
+.avatar{width:110px;height:110px;border-radius:50%;background:#2455a4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:700}
+.profile-info p{margin:9px 0}.profile-info b{color:#667085}
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #edf0f5}th{background:#f0f4fa}
+.primary{background:#2455a4;color:#fff}.secondary{background:#e8eef8;color:#17345f}.danger{background:#fee2e2;color:#991b1b}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d8dee9;border-radius:10px;font:inherit;margin-top:6px;background:#fff}
+textarea{min-height:90px;resize:vertical}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.form-group{margin-bottom:12px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.login-box{max-width:450px;margin:25px auto}.login-icon{font-size:42px;margin-bottom:10px}
+.hidden{display:none!important}.muted{color:#667085;font-size:14px}.success{color:#067647;font-weight:700}.error{color:#b42318;font-weight:700}
+.empty{padding:25px;text-align:center;color:#667085;background:#fff;border-radius:15px}
+footer{text-align:center;color:#667085;padding:25px;font-size:13px}
+@media(max-width:800px){.cards{grid-template-columns:repeat(2,1fr)}.feature-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:550px){.cards,.feature-grid,.form-grid{grid-template-columns:1fr}.profile{grid-template-columns:1fr}.application{flex-direction:column;align-items:flex-start;gap:10px}th,td{padding:9px;font-size:13px}}
+</style>
+</head>
+<body>
+<header>
+<div class="header-inner">
+<div class="logo">School<span>Portal</span></div>
+<button class="menu-btn" onclick="alert('School Portal • Prototype')">☰</button>
+</div>
+</header>
+
+<div class="container">
+<div class="hero">
+<h1>Welcome back, Alex 👋</h1>
+<p>Student Dashboard • Class 12 • Roll No. 24</p>
+</div>
+
+<div class="tabs">
+<button id="studentTab" class="tab active" type="button">🎓 Student</button>
+<button id="teacherTab" class="tab" type="button">👨‍🏫 Teacher 🔒</button>
+<button id="adminTab" class="tab" type="button">🛠️ Admin 🔒</button>
+</div>
+
+<section id="student" class="page active">
+<h2 class="section-title">Student Overview</h2>
+<div class="cards">
+<div class="card"><div class="icon">📅</div><h3>Attendance</h3><strong id="studentAttendance">94%</strong></div>
+<div class="card"><div class="icon">📝</div><h3>Applications</h3><strong id="studentApplications">2</strong></div>
+<div class="card"><div class="icon">📢</div><h3>Notices</h3><strong id="studentNoticeCount">3</strong></div>
+<div class="card"><div class="icon">💰</div><h3>Fees Due</h3><strong>₹0</strong></div>
+</div>
+<h2 class="section-title">Student Services</h2>
+<div class="feature-grid">
+<div class="feature" onclick="openSection('attendance')"><div class="icon">📊</div><h3>Attendance</h3><p>View your attendance record.</p></div>
+<div class="feature" onclick="openSection('applications')"><div class="icon">📝</div><h3>Absence Application</h3><p>Submit and track applications.</p></div>
+<div class="feature" onclick="openSection('notices')"><div class="icon">📢</div><h3>Notices</h3><p>View school announcements.</p></div>
+<div class="feature" onclick="openSection('fees')"><div class="icon">💰</div><h3>Fees</h3><p>Check your fee status.</p></div>
+<div class="feature" onclick="openSection('profile')"><div class="icon">👤</div><h3>Profile</h3><p>View your student information.</p></div>
+</div>
+<div id="studentContent"></div>
+</section>
+
+<section id="teacher" class="page">
+<div id="teacherLogin" class="panel login-box">
+<div class="login-icon">👨‍🏫</div><h2>Teacher Login</h2><p class="muted">Enter the teacher password to continue.</p>
+<div class="form-group"><label>Password</label><input id="teacherPassword" type="password" placeholder="Teacher password"></div>
+<div class="actions"><button class="primary" onclick="login('teacher')">Login</button><button class="secondary" onclick="returnToStudent()">Cancel</button></div>
+<p id="teacherLoginMsg" class="error" style="margin-top:10px"></p>
+</div>
+<div id="teacherPanel" class="hidden">
+<h2 class="section-title">Teacher Dashboard</h2>
+<div class="cards">
+<div class="card"><div class="icon">👨‍🎓</div><h3>Total Students</h3><strong id="teacherStudentCount">42</strong></div>
+<div class="card"><div class="icon">📅</div><h3>Today's Attendance</h3><strong id="teacherAttendance">95%</strong></div>
+<div class="card"><div class="icon">📝</div><h3>Pending Requests</h3><strong>3</strong></div>
+<div class="card"><div class="icon">📢</div><h3>Class Notices</h3><strong id="teacherNoticeCount">4</strong></div>
+</div>
+
+<div class="panel">
+<h3>Student Records</h3>
+<div class="form-grid">
+<div class="form-group"><label>Student name</label><input id="tStudentName" placeholder="e.g. Rahul Sharma"></div>
+<div class="form-group"><label>Roll number</label><input id="tRoll" placeholder="e.g. 25"></div>
+<div class="form-group"><label>Attendance %</label><input id="tAttendance" type="number" min="0" max="100" placeholder="94"></div>
+<div class="form-group"><label>Marks</label><input id="tMarks" type="number" min="0" max="100" placeholder="85"></div>
+</div>
+<div class="actions"><button class="primary" onclick="saveStudent()">Add / Update Student</button></div>
+<div id="teacherStudentsTable" style="margin-top:16px"></div>
+</div>
+
+<div class="panel">
+<h3>Assignments</h3>
+<div class="form-grid">
+<div class="form-group"><label>Title</label><input id="assignmentTitle" placeholder="Physics assignment"></div>
+<div class="form-group"><label>Due date</label><input id="assignmentDate" type="date"></div>
+</div>
+<div class="actions"><button class="primary" onclick="addAssignment()">Add Assignment</button></div>
+<div id="assignmentList" style="margin-top:15px"></div>
+</div>
+
+<div class="panel">
+<h3>Post Notice</h3>
+<div class="form-group"><label>Notice title</label><input id="noticeTitle" placeholder="Class notice"></div>
+<div class="form-group"><label>Message</label><textarea id="noticeMessage" placeholder="Write the notice..."></textarea></div>
+<div class="actions"><button class="primary" onclick="addNotice()">Publish Notice</button><button class="danger" onclick="logout()">Logout</button></div>
+</div>
+</div>
+</section>
+
+<section id="admin" class="page">
+<div id="adminLogin" class="panel login-box">
+<div class="login-icon">🛠️</div><h2>Admin Login</h2><p class="muted">Enter the admin password to continue.</p>
+<div class="form-group"><label>Password</label><input id="adminPassword" type="password" placeholder="Admin password"></div>
+<div class="actions"><button class="primary" onclick="login('admin')">Login</button><button class="secondary" onclick="returnToStudent()">Cancel</button></div>
+<p id="adminLoginMsg" class="error" style="margin-top:10px"></p>
+</div>
+<div id="adminPanel" class="hidden">
+<h2 class="section-title">Admin Dashboard</h2>
+<div class="cards">
+<div class="card"><div class="icon">👨‍🎓</div><h3>Students</h3><strong id="adminStudentCount">183</strong></div>
+<div class="card"><div class="icon">👨‍🏫</div><h3>Teachers</h3><strong>24</strong></div>
+<div class="card"><div class="icon">🏫</div><h3>Classes</h3><strong>8</strong></div>
+<div class="card"><div class="icon">📊</div><h3>Attendance</h3><strong id="adminAttendance">94%</strong></div>
+</div>
+
+<div class="panel">
+<h3>School Data</h3>
+<p class="muted">Admin can manage the same student records and notices used by the teacher portal.</p>
+<div class="actions">
+<button class="primary" onclick="renderAdminStudents()">Refresh Student Records</button>
+<button class="danger" onclick="logout()">Logout</button>
+</div>
+<div id="adminStudentsTable" style="margin-top:15px"></div>
+</div>
+
+<div class="panel">
+<h3>🔐 Security & Password Management</h3>
+<p class="muted">Change the prototype passwords for the Teacher and Admin sections.</p>
+<div class="form-grid">
+<div class="form-group"><label>New Teacher password</label><input id="newTeacherPassword" type="password" placeholder="New teacher password"></div>
+<div class="form-group"><label>Confirm Teacher password</label><input id="confirmTeacherPassword" type="password" placeholder="Confirm password"></div>
+<div class="form-group"><label>New Admin password</label><input id="newAdminPassword" type="password" placeholder="New admin password"></div>
+<div class="form-group"><label>Confirm Admin password</label><input id="confirmAdminPassword" type="password" placeholder="Confirm password"></div>
+</div>
+<div class="actions"><button class="primary" onclick="changePasswords()">Save Password Changes</button></div>
+<p id="passwordMsg" style="margin-top:10px"></p>
+</div>
+
+<div class="panel">
+<h3>System Overview</h3>
+<table><tr><th>Module</th><th>Status</th></tr>
+<tr><td>Student Management</td><td>Active</td></tr>
+<tr><td>Teacher Portal</td><td>Active</td></tr>
+<tr><td>Attendance</td><td>Active</td></tr>
+<tr><td>Marks</td><td>Active</td></tr>
+<tr><td>Notices</td><td>Active</td></tr>
+<tr><td>Fees</td><td>Prototype</td></tr>
+</table>
+</div>
+</div>
+</section>
+</div>
+
+<footer>School Portal • Prototype • Local demo data</footer>
+
+<script>
+const defaultData={
+teacherPassword:"teacher123",
+adminPassword:"admin123",
+students:[
+{name:"Alex Sharma",roll:"24",attendance:94,marks:86},
+{name:"Rahul Sharma",roll:"25",attendance:91,marks:82},
+{name:"Ananya Singh",roll:"26",attendance:97,marks:91}
+],
+assignments:[{title:"Physics assignment",date:"2026-10-05"}],
+notices:[
+{title:"Half-Yearly Results",message:"Results will be published soon.",date:"Today"},
+{title:"School Assembly",message:"All students must attend Monday's assembly.",date:"Yesterday"},
+{title:"Holiday Notice",message:"School will remain closed on the upcoming holiday.",date:"2 days ago"}
+]
+};
+
+let data=JSON.parse(localStorage.getItem("schoolPortalData")||"null")||defaultData;
+let loggedRole=null;
+function saveData(){localStorage.setItem("schoolPortalData",JSON.stringify(data));updateCounts()}
+function updateCounts(){
+document.getElementById("studentNoticeCount").textContent=data.notices.length;
+document.getElementById("teacherNoticeCount").textContent=data.notices.length;
+document.getElementById("teacherStudentCount").textContent=data.students.length;
+document.getElementById("adminStudentCount").textContent=data.students.length+180;
+}
+function showPage(page,button){
+document.querySelectorAll(".page").forEach(s=>s.classList.remove("active"));
+document.getElementById(page).classList.add("active");
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+if(button)button.classList.add("active");
+window.scrollTo({top:0,behavior:"smooth"});
+}
+function requestLogin(role){
+showPage(role);
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+document.getElementById(role+"Login").classList.remove("hidden");
+document.getElementById(role+"Panel").classList.add("hidden");
+document.getElementById(role+"Password").focus();
+}
+function login(role){
+const input=document.getElementById(role+"Password");
+const msg=document.getElementById(role+"LoginMsg");
+const correct=role==="teacher"?data.teacherPassword:data.adminPassword;
+if(input.value===correct){
+loggedRole=role;
+document.getElementById(role+"Login").classList.add("hidden");
+document.getElementById(role+"Panel").classList.remove("hidden");
+msg.textContent="";
+if(role==="teacher"){renderTeacherStudents();renderAssignments()}
+if(role==="admin"){renderAdminStudents()}
+}else{msg.textContent="Incorrect password. Try again.";input.value=""}
+}
+function returnToStudent(){
+showPage("student",document.querySelector(".tab"));
+}
+function logout(){
+loggedRole=null;
+document.getElementById("teacherLogin").classList.remove("hidden");
+document.getElementById("teacherPanel").classList.add("hidden");
+document.getElementById("adminLogin").classList.remove("hidden");
+document.getElementById("adminPanel").classList.add("hidden");
+document.getElementById("teacherPassword").value="";
+document.getElementById("adminPassword").value="";
+showPage("student",document.querySelector(".tab"));
+}
+function openSection(section){
+const content=document.getElementById("studentContent");
+if(section==="attendance")content.innerHTML=`<h2 class="section-title">Attendance</h2><div class="card"><h3>Current Attendance</h3><strong id="studentAttendanceLarge">94%</strong><p style="margin-top:10px">Attendance shown here is demo data.</p></div>`;
+if(section==="applications")content.innerHTML=`<h2 class="section-title">Absence Applications</h2><div class="application"><div><strong>Medical appointment</strong><p>2 October 2026</p></div><span class="status pending">Pending</span></div><div class="application"><div><strong>Illness</strong><p>20 September 2026</p></div><span class="status approved">Approved</span></div>`;
+if(section==="notices")content.innerHTML=`<h2 class="section-title">School Notices</h2>${data.notices.map(n=>`<div class="notice"><strong>${escapeHtml(n.title)}</strong><p>${escapeHtml(n.message)}</p><small>${escapeHtml(n.date)}</small></div>`).join("")}`;
+if(section==="fees")content.innerHTML=`<h2 class="section-title">Fee Status</h2><div class="card"><h3>Current Balance</h3><strong>₹0</strong><p style="margin-top:10px">All demo fees are cleared.</p></div>`;
+if(section==="profile")content.innerHTML=`<h2 class="section-title">Student Profile</h2><div class="profile"><div class="avatar">A</div><div class="profile-info"><p><b>Name:</b> Alex Sharma</p><p><b>Class:</b> 12 Science</p><p><b>Roll No:</b> 24</p><p><b>Student ID:</b> STU-1024</p><p><b>Attendance:</b> 94%</p></div></div>`;
+content.scrollIntoView({behavior:"smooth"});
+}
+function saveStudent(){
+const name=document.getElementById("tStudentName").value.trim();
+const roll=document.getElementById("tRoll").value.trim();
+const attendance=Number(document.getElementById("tAttendance").value);
+const marks=Number(document.getElementById("tMarks").value);
+if(!name||!roll||Number.isNaN(attendance)||Number.isNaN(marks)){alert("Please fill all student fields.");return}
+const existing=data.students.findIndex(s=>s.roll===roll);
+const student={name,roll,attendance,marks};
+if(existing>=0)data.students[existing]=student;else data.students.push(student);
+saveData();renderTeacherStudents();renderAdminStudents();
+document.getElementById("tStudentName").value="";
+document.getElementById("tRoll").value="";
+document.getElementById("tAttendance").value="";
+document.getElementById("tMarks").value="";
+alert(existing>=0?"Student updated.":"Student added.");
+}
+function deleteStudent(roll){
+if(!confirm("Delete this student record?"))return;
+data.students=data.students.filter(s=>s.roll!==roll);saveData();renderTeacherStudents();renderAdminStudents();
+}
+function renderTeacherStudents(){
+const box=document.getElementById("teacherStudentsTable");
+if(!data.students.length){box.innerHTML='<div class="empty">No student records.</div>';return}
+box.innerHTML=`<table><tr><th>Name</th><th>Roll</th><th>Attendance</th><th>Marks</th><th>Action</th></tr>${data.students.map(s=>`<tr><td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.roll)}</td><td>${s.attendance}%</td><td>${s.marks}</td><td><button class="danger" onclick="deleteStudent('${escapeAttr(s.roll)}')">Delete</button></td></tr>`).join("")}</table>`;
+}
+function renderAdminStudents(){
+const box=document.getElementById("adminStudentsTable");
+if(!box)return;
+box.innerHTML=`<table><tr><th>Name</th><th>Roll</th><th>Attendance</th><th>Marks</th></tr>${data.students.map(s=>`<tr><td>${escapeHtml(s.name)}</td><td>${escapeHtml(s.roll)}</td><td>${s.attendance}%</td><td>${s.marks}</td></tr>`).join("")}</table>`;
+}
+function addAssignment(){
+const title=document.getElementById("assignmentTitle").value.trim();
+const date=document.getElementById("assignmentDate").value;
+if(!title||!date){alert("Enter assignment title and due date.");return}
+data.assignments.push({title,date});saveData();renderAssignments();
+document.getElementById("assignmentTitle").value="";document.getElementById("assignmentDate").value="";
+}
+function renderAssignments(){
+const box=document.getElementById("assignmentList");
+if(!data.assignments.length){box.innerHTML='<div class="empty">No assignments.</div>';return}
+box.innerHTML=data.assignments.map((a,i)=>`<div class="application"><div><strong>${escapeHtml(a.title)}</strong><p>Due: ${escapeHtml(a.date)}</p></div><button class="danger" onclick="deleteAssignment(${i})">Delete</button></div>`).join("");
+}
+function deleteAssignment(i){data.assignments.splice(i,1);saveData();renderAssignments()}
+function addNotice(){
+const title=document.getElementById("noticeTitle").value.trim();
+const message=document.getElementById("noticeMessage").value.trim();
+if(!title||!message){alert("Enter a title and message.");return}
+data.notices.unshift({title,message,date:"Just now"});saveData();
+document.getElementById("noticeTitle").value="";document.getElementById("noticeMessage").value="";
+alert("Notice published.");
+}
+function changePasswords(){
+const tp=document.getElementById("newTeacherPassword").value;
+const tcp=document.getElementById("confirmTeacherPassword").value;
+const ap=document.getElementById("newAdminPassword").value;
+const acp=document.getElementById("confirmAdminPassword").value;
+const msg=document.getElementById("passwordMsg");
+if(!tp&&!ap){msg.className="error";msg.textContent="Enter at least one new password.";return}
+if(tp&&(tp!==tcp||tp.length<4)){msg.className="error";msg.textContent="Teacher passwords must match and be at least 4 characters.";return}
+if(ap&&(ap!==acp||ap.length<4)){msg.className="error";msg.textContent="Admin passwords must match and be at least 4 characters.";return}
+if(tp)data.teacherPassword=tp;
+if(ap)data.adminPassword=ap;
+saveData();
+document.getElementById("newTeacherPassword").value="";
+document.getElementById("confirmTeacherPassword").value="";
+document.getElementById("newAdminPassword").value="";
+document.getElementById("confirmAdminPassword").value="";
+msg.className="success";msg.textContent="Password changes saved successfully.";
+}
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function escapeAttr(v){return String(v).replace(/'/g,"\\'")}
+updateCounts();
+
+// Reliable mobile tab controls
+document.getElementById("studentTab").addEventListener("click", function(){
+  showPage("student", this);
+});
+document.getElementById("teacherTab").addEventListener("click", function(){
+  requestLogin("teacher");
+});
+document.getElementById("adminTab").addEventListener("click", function(){
+  requestLogin("admin");
+});
+</script>
+</body>
+</html>
